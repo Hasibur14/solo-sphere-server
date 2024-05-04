@@ -15,7 +15,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lfxjcnl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
@@ -31,6 +31,24 @@ async function run() {
 
         const jobsCollection = client.db('soloSphere').collection('jobs')
         const bidsCollection = client.db('soloSphere').collection('bids')
+
+
+
+        //get jobs data
+        app.get('/jobs', async (req, res) => {
+            const cursor = jobsCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.get('/job/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await jobsCollection.findOne(query)
+            res.send(result)
+        })
+
+
 
 
 
